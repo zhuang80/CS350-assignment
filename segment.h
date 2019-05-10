@@ -2,6 +2,8 @@
 #define SEGMENT_H
 
 #include"checkpoint.h"
+#include"imap.h"
+#include"inode.h"
 
 struct Segment{
 	int id; 
@@ -15,5 +17,6 @@ struct Segment{
 
 void InitSegment(Segment *segment, int id);
 void WriteToDisk(Segment *segment, Checkpoint *checkpoint);
+void Cleaning(Imap *imap, Segment *segment, Checkpoint *checkpoint);
 
 #endif

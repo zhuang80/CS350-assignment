@@ -5,7 +5,6 @@ run:
 	
 clean:
 	rm -rf DRIVE
-	rm -rf *.txt
 	rm -rf LFS
 
 LFS:checkpoint.cpp imap.cpp inode.cpp segment.cpp LFS.cpp

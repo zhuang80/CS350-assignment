@@ -9,5 +9,6 @@ struct Checkpoint{
 void ReadCheckpoint(Checkpoint *checkpoint);
 void WriteCheckpoint(Checkpoint *checkpoint);
 int FindCleanSegment(Checkpoint *checkpoint);
+int CheckNumOfCleanSegment(Checkpoint *checkpoint);
 
 #endif

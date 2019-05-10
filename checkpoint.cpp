@@ -7,6 +7,7 @@
 #include<iostream>
 #include"checkpoint.h"
 using namespace std;
+
 void ReadCheckpoint(Checkpoint *checkpoint){
 	int checkpoint_fd, block_num;
 	char live;
@@ -43,4 +44,12 @@ int FindCleanSegment(Checkpoint *checkpoint){
 		}
 	}
 	return -1;
+}
+
+int CheckNumOfCleanSegment(Checkpoint *checkpoint){
+	int count=0;
+	for(int i=0;i<64;i++){
+		if(checkpoint->live[i]==0) count++;
+	}
+	return count;
 }
