@@ -37,10 +37,10 @@ void WriteToDisk(Segment *segment, Checkpoint *checkpoint){
 	}
 	close(fd);
 	checkpoint->live[segment->id]=1;
-	std::cout<<"write to segment "<<segment->id<<std::endl;
+	//std::cout<<"write to segment "<<segment->id<<std::endl;
 	//find a new clean segment 
 	int free_segment_num=FindCleanSegment(checkpoint);
-	std::cout<<"select free segment "<<free_segment_num<<std::endl;
+	//std::cout<<"select free segment "<<free_segment_num<<std::endl;
 	if(free_segment_num==-1) std::cerr<<"There is no segment available."<<std::endl;
 	else InitSegment(segment, free_segment_num);
 }
@@ -48,13 +48,24 @@ void WriteToDisk(Segment *segment, Checkpoint *checkpoint){
 void Cleaning(Imap *imap, Segment *segment, Checkpoint *checkpoint){
 	Inode inode;
 	char segment_name[32];
-	int clena_list[10];
+	int clean_list[10], count, id;
 	int fd, block_num, imap_num, inode_num, offset, segment_offset, segment_num, segment_fd;
 	Segment segment_clean;
 	
-	int id=0;
-	while(CheckNumOfCleanSegment(checkpoint)<=63 && id<64){
-		for(int i=0;i<10;i++){
+	int start=0;
+	while(CheckNumOfCleanSegment(checkpoint)<=15 && start<64){
+		count=0;
+		//choose 10 segments which we want to clean
+		for(int i=start; i<64 && count<10;i++){
+			if(checkpoint->live[i]==1){
+				clean_list[count]=i;
+				count++;
+			}
+		}
+		start+=10;
+		
+		for(int i=0;i<count;i++){
+			id=clean_list[i];
 			if(checkpoint->live[id]==1){
 				segment_clean.id=id;	
 				sprintf(segment_name, "DRIVE/SEGMENT%d", id);
@@ -99,6 +110,7 @@ void Cleaning(Imap *imap, Segment *segment, Checkpoint *checkpoint){
 							}	
 						}				
 					}else if(segment_clean.SSB[j][0]>=0){
+						
 						inode_num=segment_clean.SSB[j][0];
 						if(inode_num!=-1) {
 							block_num=imap->index[inode_num];
@@ -133,7 +145,8 @@ void Cleaning(Imap *imap, Segment *segment, Checkpoint *checkpoint){
 										segment->used_num++;
 										if(segment->used_num==1024) WriteToDisk(segment, checkpoint);							
 									}	
-									segment_clean.SSB[k][0]==-3;				
+									segment_clean.SSB[k][0]=-3;
+													
 								}					
 							}
 							memcpy(&segment->buffer[(segment->used_num-8)*1024], &inode, sizeof(Inode));

@@ -47,9 +47,8 @@ int main(int argc, char ** argv){
 					break;
 				}
 
-				if(CheckNumOfCleanSegment(&checkpoint)<=60){
+				if(CheckNumOfCleanSegment(&checkpoint)<=10){
 					 Cleaning(&imap, &segment, &checkpoint);
-					 cout<<"after clean "<<segment.id<<endl;
 				}
 
 				Import(filename, lfs_filename, &imap, &segment, &checkpoint);
@@ -285,7 +284,7 @@ void List(Imap *imap, Segment *segment){
 			segment_num=block_num/1024;
 			offset=block_num%1024;
 
-			cout<<"block_num "<<block_num<<" "<<"seg_num "<<segment_num<<" "<<"offset "<<offset<<endl;
+			//cout<<"block_num "<<block_num<<" "<<"seg_num "<<segment_num<<" "<<"offset "<<offset<<endl;
 			//This file is not written back to drive
 			if(segment_num==segment->id){
 				int index=(offset-8)*1024;
@@ -298,7 +297,7 @@ void List(Imap *imap, Segment *segment){
 				read(segment_fd, &inode, sizeof(Inode));
 				close(segment_fd);
 			}
-			cout<<" size "<<inode.size<<endl;
+			
 			printf("%-16s|%-16d\n", name, inode.size);
 			
 		}
